@@ -1,0 +1,208 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+void openfil(string* arrow);
+void createfile(string *a, string *name);
+void output(string* name);
+int main() {
+	string a;
+	openfil(&a);
+	string name;
+	cout << "Enter file name: "; cin >> name;
+	createfile(&a, &name);
+	output(&name);
+	
+}
+void openfil(string* arrow) {
+	fstream Fin;
+	Fin.open("file12.txt");
+	if (!Fin.is_open()) {
+		cout << "no";
+	}
+	else {
+		while (!Fin.eof()) {
+			string s, s1, s2;
+			getline(Fin, s);
+			char m = '"';
+			int mpos = s.find(m);
+			if (mpos != -1) {
+				int mlpos = s.rfind(m);
+				mlpos++;
+				for (int i = mpos; i < mlpos; i++) {
+					char ch = s[i];
+					s1 += ch;
+					
+				}
+				*arrow += s1;
+				int sum = 0;
+				int lpos = s.rfind(",");
+				while (mlpos < lpos) {
+					string s3;
+					mlpos++;
+					int pos2 = s.find(",", mlpos);
+					if (mlpos == pos2) { 
+						mlpos++;
+					    pos2 = s.find(",", mlpos);
+					}
+					for (int i = mlpos; i < pos2; i++) {
+						char ch = s[i];
+						s3 += ch;
+					}
+					int p = stoi(s3);
+					sum += p;
+					mlpos = pos2;
+				}
+				//cout << s2 << endl;
+				s2 = to_string(sum);
+				*arrow += "," + s2 + ",";
+				//cout << *arrow;
+			}
+			else {
+				int pos = s.find(",");
+				//cout << pos;
+				for (int i = 0; i < pos; i++) {
+					char ch = s[i];
+					s1 += ch;
+				}
+				//cout << s1 << endl;
+				*arrow += s1;
+				int sum = 0;
+				int lpos = s.rfind(",");
+				while (pos < lpos) {
+					string s3;
+					pos++;
+					int pos2 = s.find(",", pos);
+					for (int i = pos; i < pos2; i++) {
+						char ch = s[i];
+						s3 += ch;
+					}
+					int p = stoi(s3);
+					sum += p;
+					pos = pos2;
+				}
+				//cout << s2 << endl;
+				s2 = to_string(sum);
+				*arrow += "," + s2 + ",";
+			}
+
+		}
+	}
+	Fin.close();
+
+}
+void createfile(string *a, string *name) {
+	
+	string s = *a;
+	string str[10];
+	int ar[10];
+	int pos = 0;
+	int lpos = s.rfind(",");
+	lpos--;
+	lpos = s.rfind(",", lpos);
+	lpos--;
+	lpos = s.rfind(",", lpos);
+	int k = 1;
+	char m = '"';
+	int mpos = s.find(m);
+	mpos++;
+	int mpos2 = s.find(m, mpos);
+	mpos-=3;
+	while (pos<lpos) {
+		int pos2;
+		int boo = 0;
+		cout << mpos << " " << pos << endl;
+		while (mpos < pos and pos < mpos2) {
+			string s1;
+			pos++;
+			pos2 = s.find(",", pos);
+			for (int i = pos; i < pos2; i++) {
+				char ch = s[i];
+				s1 += ch;
+			}
+			str[k] = s1;
+			pos2++;
+			pos = pos2;
+
+			//cout << "Y" << pos << pos2;
+			boo = 1;
+
+		}
+		if (boo == 1) {
+			mpos2++;
+			mpos = s.find(m, mpos2);
+			mpos++;
+			mpos2 = s.find(m, mpos);
+			mpos -= 3;
+		}
+		if (boo == 0) {
+			string s1;
+			pos++;
+			pos2 = s.find(",", pos);
+			for (int i = pos; i < pos2; i++) {
+				char ch = s[i];
+				s1 += ch;
+			}
+			//cout << pos << pos2;
+			str[k] = s1;
+		}
+		pos2++;
+		int pos3 = s.find(",", pos2);
+		string s3 ;
+		for (int i = pos2; i < pos3; i++) {
+			char ch = s[i];
+			s3 += ch;
+		}
+		int a = stoi(s3);
+		ar[k] = a;
+		pos = pos3;
+		k++;
+	}
+	for (int i = 1; i < 10; i++) {
+		for (int j = 1; j < 10; j++) {
+			if (ar[j] < ar[j + 1]) {
+				int stepint = ar[j + 1];
+				ar[j + 1] = ar[j];
+				ar[j] = stepint;
+				string step = str[j + 1];
+				str[j + 1] = str[j];
+				str[j] = step;
+			}
+		}
+	}
+	string sro = *name;
+	ofstream ouf(*name);
+	if (!ouf.is_open()) {
+		cout << "no";
+	}
+	else {
+		for (int i = 1; i < 10; i++) {
+			string s = str[i];
+			string s1 = to_string(ar[i]);
+			s += "-";
+			s += s1;
+			ouf << s << endl;
+			//cout << s << endl;
+		}
+		ouf.close();
+	}
+}
+void output(string *name) {
+	/*string s;
+	s += ' " ';
+	string s1 = *name;
+	s += s1 + ".txt";
+	s += ' " ';*/
+	ifstream out(*name);
+	if (!out.is_open()) {
+		cout << "No";
+	}
+	else {
+		cout << "Yes";
+		while (!out.eof()) {
+			string s2;
+			getline(out, s2);
+			cout << s2 << endl;
+		}
+	}
+}
